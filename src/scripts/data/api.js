@@ -3,7 +3,7 @@ import CONFIG from "../config";
 const ENDPOINTS = {
   ENDPOINT_REGISTER: `${CONFIG.BASE_URL}/register`,
   ENDPOINT_LOGIN: `${CONFIG.BASE_URL}/login`,
-  ENDPOINT_GET_DATA: `${CONFIG.BASE_URL}/your/endpoint/here`,
+  ENDPOINT_STORY: `${CONFIG.BASE_URL}/stories`,
 };
 
 //register
@@ -68,7 +68,8 @@ export async function login(data) {
   }
 }
 
-export async function getData() {
+//get story data
+export async function getStory() {
   const fetchResponse = await fetch(ENDPOINTS.ENDPOINT);
   return await fetchResponse.json();
 }
