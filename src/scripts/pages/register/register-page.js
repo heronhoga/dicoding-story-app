@@ -1,3 +1,4 @@
+import { register } from "../../data/api";
 export default class RegisterPage {
   async render() {
     return `
@@ -35,11 +36,13 @@ export default class RegisterPage {
   }
 
   async afterRender() {
-    const form = document.getElementById('register-form');
+    const form = document.getElementById("register-form");
     const passwordInput = form.password;
-    const passwordError = document.getElementById('password-error');
+    const passwordError = document.getElementById("password-error");
+    const submitButton = form.querySelector('button[type="submit"]');
+    const originalButtonText = submitButton.textContent;
 
-    form.addEventListener('submit', (e) => {
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
 
       const name = form.name.value.trim();
@@ -47,19 +50,34 @@ export default class RegisterPage {
       const password = passwordInput.value;
 
       if (password.length < 8) {
-        passwordError.style.display = 'block';
-        passwordInput.setAttribute('aria-invalid', 'true');
+        passwordError.style.display = "block";
+        passwordInput.setAttribute("aria-invalid", "true");
         passwordInput.focus();
         return;
       } else {
-        passwordError.style.display = 'none';
-        passwordInput.removeAttribute('aria-invalid');
+        passwordError.style.display = "none";
+        passwordInput.removeAttribute("aria-invalid");
       }
 
-      console.log('Nama:', name);
-      console.log('Email:', email);
-      console.log('Password:', password);
+      submitButton.disabled = true;
+      submitButton.textContent = "Mendaftarkan...";
 
+      try {
+        const result = await register({ name, email, password });
+
+        if (result.ok && !result.error) {
+          alert("🎉 Pendaftaran berhasil! Silakan login.");
+          window.location.hash = "#/login";
+        } else {
+          alert(`❌ Gagal mendaftar: ${result.message}`);
+        }
+      } catch (err) {
+        alert("❌ Terjadi kesalahan jaringan.");
+        console.error(err);
+      } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = originalButtonText;
+      }
     });
   }
 }
