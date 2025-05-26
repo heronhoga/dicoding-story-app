@@ -1,4 +1,5 @@
 import { login } from "../../data/api";
+import { updateAuthNav } from "../../utils";
 
 export default class LoginPage {
   async render() {
@@ -48,6 +49,8 @@ export default class LoginPage {
           localStorage.setItem("token", response.loginResult.token);
           localStorage.setItem("userId", response.loginResult.userId);
           localStorage.setItem("name", response.loginResult.name);
+
+          updateAuthNav();
 
           window.location.hash = "#/main";
         } else {

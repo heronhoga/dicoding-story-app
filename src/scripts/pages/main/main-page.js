@@ -1,3 +1,4 @@
+import { updateAuthNav } from "../../utils";
 export default class MainPage {
   async render() {
     return `
@@ -8,6 +9,10 @@ export default class MainPage {
   }
 
   async afterRender() {
-    
+    document.getElementById("logout-button").addEventListener("click", () => {
+      localStorage.clear();
+      updateAuthNav();
+      window.location.hash = "#/";
+    });
   }
 }
