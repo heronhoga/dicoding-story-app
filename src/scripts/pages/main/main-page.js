@@ -3,6 +3,7 @@ import { getStory } from "../../data/api";
 
 export default class MainPage {
   async render() {
+    updateAuthNav();
     const responseStories = await getStory();
     const stories = responseStories?.listStory;
 
@@ -37,7 +38,10 @@ export default class MainPage {
 
     return `
       <section style="padding: 20px;">
-        <h2>Daftar Cerita</h2>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <h2>Daftar Cerita</h2>
+          <a href="#/create" style="padding: 10px 16px; background-color: #2196f3; color: white; border-radius: 5px; text-decoration: none;">➕ Tambah Cerita</a>
+        </div>
         <div>${storyListHTML}</div>
         
         <h2 style="margin-top: 40px;">Peta Lokasi Cerita</h2>

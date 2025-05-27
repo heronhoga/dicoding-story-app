@@ -112,3 +112,39 @@ export async function getStory() {
   }
 }
 
+//create new story data
+export async function createStory(formData) {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      return {
+        ok: false,
+        status: 403,
+        message: "Unauthorized",
+      };
+    }
+
+    const response = await fetch(ENDPOINTS.ENDPOINT_STORY, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    });
+
+    const result = await response.json();
+
+    return {
+      ok: response.ok,
+      status: response.status,
+      message: result.message || "Unknown error",
+    };
+  } catch (error) {
+    console.error("createStory error:", error);
+    return {
+      ok: false,
+      status: 500,
+      message: "Network or server error",
+    };
+  }
+}
