@@ -70,6 +70,45 @@ export async function login(data) {
 
 //get story data
 export async function getStory() {
-  const fetchResponse = await fetch(ENDPOINTS.ENDPOINT);
-  return await fetchResponse.json();
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      return {
+        ok: false,
+        status: 403,
+        error: true,
+        message: "Forbidden",
+        listStory: [],
+      };
+    }
+
+    const fetchResponse = await fetch(ENDPOINTS.ENDPOINT_STORY, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const response = await fetchResponse.json();
+    console.log("API Response:", response);
+
+    return {
+      ok: fetchResponse.ok,
+      status: fetchResponse.status,
+      error: response.error,
+      message: response.message,
+      listStory: response.listStory ?? [],
+    };
+  } catch (error) {
+    console.error("Get story error:", error);
+    return {
+      ok: false,
+      status: 500,
+      error: true,
+      message: "Network or server error",
+      listStory: [],
+    };
+  }
 }
+
