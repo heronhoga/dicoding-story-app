@@ -1,5 +1,5 @@
-import routes from '../routes/routes';
-import { getActiveRoute } from '../routes/url-parser';
+import routes from "../routes/routes";
+import { getActiveRoute } from "../routes/url-parser";
 
 class App {
   #content = null;
@@ -15,32 +15,40 @@ class App {
   }
 
   #setupDrawer() {
-    this.#drawerButton.addEventListener('click', () => {
-      this.#navigationDrawer.classList.toggle('open');
+    this.#drawerButton.addEventListener("click", () => {
+      this.#navigationDrawer.classList.toggle("open");
     });
 
-    document.body.addEventListener('click', (event) => {
+    document.body.addEventListener("click", (event) => {
       if (
         !this.#navigationDrawer.contains(event.target) &&
         !this.#drawerButton.contains(event.target)
       ) {
-        this.#navigationDrawer.classList.remove('open');
+        this.#navigationDrawer.classList.remove("open");
       }
 
-      this.#navigationDrawer.querySelectorAll('a').forEach((link) => {
+      this.#navigationDrawer.querySelectorAll("a").forEach((link) => {
         if (link.contains(event.target)) {
-          this.#navigationDrawer.classList.remove('open');
+          this.#navigationDrawer.classList.remove("open");
         }
       });
     });
   }
 
   async renderPage() {
+    this.#content.style.transition = "opacity 0.3s ease";
+
+    this.#content.style.opacity = 0;
+
+    await new Promise((resolve) => setTimeout(resolve, 300));
+
     const url = getActiveRoute();
-    const page = routes[url];
+    const page = routes[url] || routes["/"];
 
     this.#content.innerHTML = await page.render();
     await page.afterRender();
+
+    this.#content.style.opacity = 1;
   }
 }
 
