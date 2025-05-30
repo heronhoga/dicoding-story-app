@@ -5,6 +5,7 @@ class App {
   #content = null;
   #drawerButton = null;
   #navigationDrawer = null;
+  #currentPage = null; // ✅ Tambah ini untuk menyimpan halaman saat ini
 
   constructor({ navigationDrawer, drawerButton, content }) {
     this.#content = content;
@@ -38,6 +39,13 @@ class App {
   async renderPage() {
     const url = getActiveRoute();
     const page = routes[url] || routes["/"];
+
+    // ✅ Destroy halaman sebelumnya jika punya method destroy()
+    if (this.#currentPage && typeof this.#currentPage.destroy === "function") {
+      this.#currentPage.destroy();
+    }
+
+    this.#currentPage = page; // ✅ Simpan instance halaman sekarang
 
     if (document.startViewTransition) {
       await document.startViewTransition(async () => {

@@ -138,4 +138,12 @@ export default class CreatePage {
       }
     });
   }
+
+  destroy() {
+    if (this.stream) {
+      this.stream.getTracks().forEach((track) => track.stop());
+      const webcam = document.getElementById("webcam");
+      if (webcam) webcam.srcObject = null;
+    }
+  }
 }
