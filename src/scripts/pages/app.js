@@ -36,19 +36,18 @@ class App {
   }
 
   async renderPage() {
-    this.#content.style.transition = "opacity 0.3s ease";
-
-    this.#content.style.opacity = 0;
-
-    await new Promise((resolve) => setTimeout(resolve, 300));
-
     const url = getActiveRoute();
     const page = routes[url] || routes["/"];
 
-    this.#content.innerHTML = await page.render();
-    await page.afterRender();
-
-    this.#content.style.opacity = 1;
+    if (document.startViewTransition) {
+      await document.startViewTransition(async () => {
+        this.#content.innerHTML = await page.render();
+        await page.afterRender();
+      });
+    } else {
+      this.#content.innerHTML = await page.render();
+      await page.afterRender();
+    }
   }
 }
 
