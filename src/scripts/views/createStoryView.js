@@ -1,7 +1,7 @@
 export default class CreateStoryView {
   constructor() {
     this.webcam = null;
-    this.stream = null;
+    this.marker = null;
   }
 
   render() {
@@ -41,11 +41,7 @@ export default class CreateStoryView {
     this.previewContainer = document.getElementById("preview-container");
     this.latInput = document.getElementById("lat-input");
     this.lonInput = document.getElementById("lon-input");
-    this.map = L.map("map").setView([-2.5, 118], 5);
-
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: "© OpenStreetMap contributors",
-    }).addTo(this.map);
+    this.mapContainer = document.getElementById("map");
   }
 
   showStatus(message) {
@@ -53,9 +49,71 @@ export default class CreateStoryView {
   }
 
   clear() {
-    if (this.webcam && this.webcam.srcObject) {
+    if (this.webcam?.srcObject) {
       this.webcam.srcObject.getTracks().forEach(track => track.stop());
       this.webcam.srcObject = null;
     }
+  }
+
+  setStream(stream) {
+    this.webcam.srcObject = stream;
+  }
+
+  onCapture(callback) {
+    this.captureBtn.addEventListener("click", callback);
+  }
+
+  onSubmit(callback) {
+    this.form.addEventListener("submit", callback);
+  }
+
+  getCanvasContext() {
+    return this.canvas.getContext("2d");
+  }
+
+  getCanvas() {
+    return this.canvas;
+  }
+
+  previewPhoto(file) {
+    this.previewContainer.innerHTML = "";
+    const previewImg = document.createElement("img");
+    previewImg.src = URL.createObjectURL(file);
+    previewImg.width = 160;
+    previewImg.style.marginTop = "10px";
+    this.previewContainer.appendChild(previewImg);
+  }
+
+  updatePhotoInput(file) {
+    const oldInput = this.form.querySelector("#photo-input");
+    if (oldInput) oldInput.remove();
+
+    const hiddenFileInput = document.createElement("input");
+    hiddenFileInput.type = "file";
+    hiddenFileInput.name = "photo";
+    hiddenFileInput.id = "photo-input";
+
+    const dt = new DataTransfer();
+    dt.items.add(file);
+    hiddenFileInput.files = dt.files;
+
+    hiddenFileInput.style.display = "none";
+    this.form.appendChild(hiddenFileInput);
+  }
+
+  getFormData() {
+    return new FormData(this.form);
+  }
+
+  setLocation(lat, lng, marker, map) {
+    this.latInput.value = lat;
+    this.lonInput.value = lng;
+
+    if (marker) {
+      marker.setLatLng([lat, lng]);
+    } else {
+      marker = L.marker([lat, lng]).addTo(map);
+    }
+    return marker;
   }
 }

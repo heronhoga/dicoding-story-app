@@ -28,14 +28,33 @@ export default class LoginView {
 
   bindLoginHandler(handler) {
     const form = document.getElementById("login-form");
-    const errorMessage = document.getElementById("error-message");
-    const submitButton = document.getElementById("submit-button");
-
-    form.addEventListener("submit", async (e) => {
+    form.addEventListener("submit", (e) => {
       e.preventDefault();
       const email = form.email.value.trim();
       const password = form.password.value;
-      await handler({ email, password, errorMessage, submitButton });
+      handler({ email, password });
     });
+  }
+
+  showLoading() {
+    const submitButton = document.getElementById("submit-button");
+    submitButton.disabled = true;
+    submitButton.innerText = "Sedang masuk...";
+  }
+
+  hideLoading() {
+    const submitButton = document.getElementById("submit-button");
+    submitButton.disabled = false;
+    submitButton.innerText = "Login";
+  }
+
+  showError(message = "Email atau password salah.") {
+    const errorMessage = document.getElementById("error-message");
+    errorMessage.textContent = message;
+    errorMessage.style.display = "block";
+  }
+
+  redirectToMain() {
+    window.location.hash = "#/main";
   }
 }

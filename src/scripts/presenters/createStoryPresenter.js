@@ -1,92 +1,56 @@
-import { StoryModel } from "../models/storyModel";
+import { StoryModel } from "../models/storyModel.js";
 
 export default class CreateStoryPresenter {
   constructor(view) {
     this.view = view;
-    this.stream = null;
+    this.model = new StoryModel();
     this.marker = null;
+    this.map = null;
   }
 
   async init() {
+    document.body.innerHTML = this.view.render();
     this.view.initElements();
 
-    this.stream = await navigator.mediaDevices.getUserMedia({ video: true });
-    this.view.webcam.srcObject = this.stream;
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    this.view.setStream(stream);
 
-    this.view.captureBtn.addEventListener("click", () => this.handleCapture());
-    this.view.form.addEventListener("submit", (e) => this.handleSubmit(e));
+    this.map = L.map(this.view.mapContainer).setView([-2.5, 118], 5);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: "© OpenStreetMap contributors",
+    }).addTo(this.map);
 
-    this.view.map.on("click", (e) => {
+    this.map.on("click", (e) => {
       const { lat, lng } = e.latlng;
-      this.view.latInput.value = lat;
-      this.view.lonInput.value = lng;
+      this.marker = this.view.setLocation(lat, lng, this.marker, this.map);
+    });
 
-      if (this.marker) {
-        this.marker.setLatLng([lat, lng]);
-      } else {
-        this.marker = L.marker([lat, lng]).addTo(this.view.map);
+    this.view.onCapture(() => {
+      const context = this.view.getCanvasContext();
+      const canvas = this.view.getCanvas();
+      context.drawImage(this.view.webcam, 0, 0, canvas.width, canvas.height);
+      canvas.toBlob((blob) => {
+        const file = new File([blob], "webcam.jpg", { type: "image/jpeg" });
+        this.view.previewPhoto(file);
+        this.view.updatePhotoInput(file);
+      }, "image/jpeg");
+    });
+
+    this.view.onSubmit(async (e) => {
+      e.preventDefault();
+      this.view.showStatus("Mengirim cerita...");
+
+      try {
+        const formData = this.view.getFormData();
+        console.log("FormData:", formData);
+
+        await this.model.createStory(formData);
+        alert("Cerita berhasil dikirim!");
+        window.location.reload();
+      } catch (err) {
+        alert("Gagal mengirim cerita.");
+        console.error("Error saat kirim cerita:", err);
       }
     });
-  }
-
-  handleCapture() {
-    const context = this.view.canvas.getContext("2d");
-    context.drawImage(this.view.webcam, 0, 0, this.view.canvas.width, this.view.canvas.height);
-    this.view.canvas.toBlob((blob) => {
-      if (!blob || blob.size > 1024 * 1024) {
-        alert("Gagal mengambil gambar atau ukuran melebihi 1MB!");
-        return;
-      }
-
-      const file = new File([blob], "webcam-photo.jpg", { type: "image/jpeg" });
-      const dt = new DataTransfer();
-      dt.items.add(file);
-
-      const oldInput = this.view.form.querySelector("#photo-input");
-      if (oldInput) oldInput.remove();
-
-      const hiddenFileInput = document.createElement("input");
-      hiddenFileInput.type = "file";
-      hiddenFileInput.name = "photo";
-      hiddenFileInput.id = "photo-input";
-      hiddenFileInput.files = dt.files;
-      hiddenFileInput.style.display = "none";
-      this.view.form.appendChild(hiddenFileInput);
-
-      this.view.previewContainer.innerHTML = "";
-      const previewImg = document.createElement("img");
-      previewImg.src = URL.createObjectURL(file);
-      previewImg.width = 160;
-      previewImg.style.marginTop = "10px";
-      this.view.previewContainer.appendChild(previewImg);
-    }, "image/jpeg");
-  }
-
-  async handleSubmit(e) {
-    e.preventDefault();
-    this.view.showStatus("Mengirim...");
-
-    const formData = new FormData(this.view.form);
-    const fileInput = this.view.form.querySelector('input[type="file"]');
-
-    if (!fileInput || !fileInput.files[0] || fileInput.files[0].size > 1024 * 1024) {
-      this.view.showStatus("Gambar tidak ditemukan atau terlalu besar (>1MB).");
-      return;
-    }
-
-    this.view.clear();
-
-    try {
-      const response = await StoryModel.create(formData);
-      if (response.ok) {
-        this.view.showStatus("Cerita berhasil dikirim!");
-        window.location.hash = "#/main";
-      } else {
-        this.view.showStatus(`Gagal mengirim cerita: ${response.message}`);
-      }
-    } catch (err) {
-      console.error(err);
-      this.view.showStatus("Terjadi kesalahan saat mengirim cerita.");
-    }
   }
 }

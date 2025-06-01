@@ -1,7 +1,9 @@
 import { createStory } from "../data/api";
+import { getToken } from "../utils";
 
-export const StoryModel = {
-  async create(formData) {
-    return await createStory(formData);
+export class StoryModel {
+  async createStory(formData) {
+    const token = getToken();
+    return await createStory(formData, token);
   }
-};
+}

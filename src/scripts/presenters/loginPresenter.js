@@ -10,26 +10,24 @@ export default class LoginPresenter {
     this.view.bindLoginHandler(this.handleLogin.bind(this));
   }
 
-  async handleLogin({ email, password, errorMessage, submitButton }) {
-    try {
-      submitButton.disabled = true;
-      submitButton.innerText = "Sedang masuk..";
+  async handleLogin({ email, password }) {
+    this.view.showLoading();
 
+    try {
       const response = await this.model.loginUser({ email, password });
 
       if (response && !response.error && response.loginResult) {
         this.model.saveSession(response.loginResult);
         updateAuthNav();
-        window.location.hash = "#/main";
+        this.view.redirectToMain();
       } else {
-        errorMessage.style.display = "block";
+        this.view.showError();
       }
     } catch (err) {
       console.error("Login error:", err);
-      errorMessage.style.display = "block";
+      this.view.showError("Terjadi kesalahan saat login.");
     } finally {
-      submitButton.disabled = false;
-      submitButton.innerText = "Login";
+      this.view.hideLoading();
     }
   }
 }
