@@ -1,9 +1,9 @@
-import { StoryModel } from "../models/storyModel.js";
+
 
 export default class CreateStoryPresenter {
-  constructor(view) {
+  constructor(model, view) {
     this.view = view;
-    this.model = new StoryModel();
+    this.model = model;
     this.marker = null;
     this.map = null;
   }
