@@ -1,9 +1,11 @@
-import { renderRegisterForm } from "../views/registerFormView"
-import { register } from "../models/registerModel";
-
 export default class RegisterPagePresenter {
+  constructor(view, model) {
+    this.view = view;
+    this.model = model;
+  }
+
   render() {
-    return renderRegisterForm();
+    return this.view.getTemplate();
   }
 
   async afterRender() {
@@ -34,7 +36,7 @@ export default class RegisterPagePresenter {
       submitButton.textContent = "Mendaftarkan...";
 
       try {
-        const result = await register({ name, email, password });
+        const result = await this.model.register({ name, email, password });
 
         if (result.ok && !result.error) {
           alert("🎉 Pendaftaran berhasil! Silakan login.");
