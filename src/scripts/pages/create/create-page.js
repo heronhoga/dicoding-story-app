@@ -1,6 +1,6 @@
 import CreateStoryView from "../../views/createStoryView.js";
 import CreateStoryPresenter from "../../presenters/createStoryPresenter.js";
-import { StoryModel } from "../../models/storyModel.js";
+import StoryModel from "../../models/storyModel.js";
 import { updateAuthNav } from "../../utils/index.js";
 
 export default class CreatePage {
