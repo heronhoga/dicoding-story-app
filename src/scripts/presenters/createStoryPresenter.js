@@ -1,7 +1,5 @@
-
-
 export default class CreateStoryPresenter {
-  constructor(model, view) {
+  constructor(view, model) {
     this.view = view;
     this.model = model;
     this.marker = null;
@@ -9,11 +7,15 @@ export default class CreateStoryPresenter {
   }
 
   async init() {
-    document.body.innerHTML = this.view.render();
-    this.view.initElements();
 
-    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-    this.view.setStream(stream);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      this.view.setStream(stream);
+    } catch (err) {
+      this.view.showStatus("Gagal mengakses kamera: " + err.message);
+      console.error(err);
+      return;
+    }
 
     this.map = L.map(this.view.mapContainer).setView([-2.5, 118], 5);
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {

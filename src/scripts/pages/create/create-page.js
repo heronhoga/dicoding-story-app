@@ -12,7 +12,8 @@ export default class CreatePage {
   }
 
   async afterRender() {
-    this.presenter = new CreateStoryPresenter(this.view);
+    this.view.initElements();
+    this.presenter = new CreateStoryPresenter(this.view, this.model);
     await this.presenter.init();
   }
 
