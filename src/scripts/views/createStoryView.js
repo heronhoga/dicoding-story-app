@@ -32,6 +32,16 @@ export default class CreateStoryView {
     `;
   }
 
+  async requestCameraAccess() {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      this.setStream(stream);
+      return stream;
+    } catch (err) {
+      throw err;
+    }
+  }
+
   initElements() {
     this.form = document.getElementById("create-story-form");
     this.statusDiv = document.getElementById("form-status");
@@ -50,7 +60,7 @@ export default class CreateStoryView {
 
   clear() {
     if (this.webcam?.srcObject) {
-      this.webcam.srcObject.getTracks().forEach(track => track.stop());
+      this.webcam.srcObject.getTracks().forEach((track) => track.stop());
       this.webcam.srcObject = null;
     }
   }

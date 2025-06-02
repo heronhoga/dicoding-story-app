@@ -7,10 +7,8 @@ export default class CreateStoryPresenter {
   }
 
   async init() {
-
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      this.view.setStream(stream);
+      await this.view.requestCameraAccess();  // pindahkan ke view
     } catch (err) {
       this.view.showStatus("Gagal mengakses kamera: " + err.message);
       console.error(err);
@@ -44,13 +42,11 @@ export default class CreateStoryPresenter {
 
       try {
         const formData = this.view.getFormData();
-        console.log("FormData:", formData);
-
         await this.model.createStory(formData);
-        alert("Cerita berhasil dikirim!");
-        window.location.reload();
+        this.view.showAlert("Cerita berhasil dikirim!"); // ganti alert
+        this.view.reloadPage(); // ganti window.location.reload()
       } catch (err) {
-        alert("Gagal mengirim cerita.");
+        this.view.showAlert("Gagal mengirim cerita."); // ganti alert
         console.error("Error saat kirim cerita:", err);
       }
     });
