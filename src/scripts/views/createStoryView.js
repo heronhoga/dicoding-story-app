@@ -6,7 +6,7 @@ export default class CreateStoryView {
 
   render() {
     return `
-      <section style="padding: 20px;">
+      <section id="main-story-content" tabindex="-1" style="padding: 20px;">
         <h1>Tambah Cerita Baru</h1>
         <form id="create-story-form" enctype="multipart/form-data">
           <label>Deskripsi:<br />
