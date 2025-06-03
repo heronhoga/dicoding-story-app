@@ -7,6 +7,7 @@ export default class HomeView {
           <p style="color: #444; font-size: 1.1em; line-height: 1.6;">
             ${introText}
           </p>
+          <a href="/#/login">Mulai Sekarang!</a>
         </div>
       </section>
     `;
