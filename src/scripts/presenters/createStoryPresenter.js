@@ -8,7 +8,7 @@ export default class CreateStoryPresenter {
 
   async init() {
     try {
-      await this.view.requestCameraAccess();  // pindahkan ke view
+      await this.view.requestCameraAccess(); 
     } catch (err) {
       this.view.showStatus("Gagal mengakses kamera: " + err.message);
       console.error(err);

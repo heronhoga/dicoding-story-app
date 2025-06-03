@@ -1,56 +1,33 @@
-export default class RegisterPagePresenter {
-  constructor(view, model) {
-    this.view = view;
+import { updateAuthNav } from "../utils";
+
+export default class RegisterPresenter {
+  constructor(model, view) {
     this.model = model;
+    this.view = view;
   }
 
-  render() {
-    return this.view.getTemplate();
+  async init() {
+    this.view.bindRegisterHandler(this.handleRegister.bind(this));
   }
 
-  async afterRender() {
-    const form = document.getElementById("register-form");
-    const passwordInput = form.password;
-    const passwordError = document.getElementById("password-error");
-    const submitButton = form.querySelector('button[type="submit"]');
-    const originalButtonText = submitButton.textContent;
+  async handleRegister({ name, email, password }) {
+    this.view.showLoading();
 
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
+    try {
+      const response = await this.model.register({ name, email, password });
 
-      const name = form.name.value.trim();
-      const email = form.email.value.trim();
-      const password = passwordInput.value;
-
-      if (password.length < 8) {
-        passwordError.style.display = "block";
-        passwordInput.setAttribute("aria-invalid", "true");
-        passwordInput.focus();
-        return;
+      if (response && !response.error) {
+        this.view.showSuccess("🎉 Pendaftaran berhasil! Silakan login.");
+        updateAuthNav();
+        this.view.redirectToLogin();
       } else {
-        passwordError.style.display = "none";
-        passwordInput.removeAttribute("aria-invalid");
+        this.view.showError(response.message || "Pendaftaran gagal.");
       }
-
-      submitButton.disabled = true;
-      submitButton.textContent = "Mendaftarkan...";
-
-      try {
-        const result = await this.model.register({ name, email, password });
-
-        if (result.ok && !result.error) {
-          alert("🎉 Pendaftaran berhasil! Silakan login.");
-          window.location.hash = "#/login";
-        } else {
-          alert(`❌ Gagal mendaftar: ${result.message}`);
-        }
-      } catch (err) {
-        alert("❌ Terjadi kesalahan jaringan.");
-        console.error(err);
-      } finally {
-        submitButton.disabled = false;
-        submitButton.textContent = originalButtonText;
-      }
-    });
+    } catch (error) {
+      console.error("Register error:", error);
+      this.view.showError("Terjadi kesalahan jaringan.");
+    } finally {
+      this.view.hideLoading();
+    }
   }
 }

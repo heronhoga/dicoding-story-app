@@ -7,7 +7,7 @@ export default class CreateStoryView {
   render() {
     return `
       <section style="padding: 20px;">
-        <h2>Tambah Cerita Baru</h2>
+        <h1>Tambah Cerita Baru</h1>
         <form id="create-story-form" enctype="multipart/form-data">
           <label>Deskripsi:<br />
             <textarea name="description" rows="4" required></textarea>

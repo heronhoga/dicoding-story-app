@@ -17,7 +17,7 @@ export default class MainPageView {
     return `
       <section id="main-story-content" tabindex="-1" style="padding: 20px;">
         <div style="display: flex; justify-content: space-between; align-items: center;">
-          <h2>Daftar Cerita</h2>
+          <h1>Daftar Cerita</h1>
           <a href="#/create" style="padding: 10px 16px; background-color: #2196f3; color: white; border-radius: 5px; text-decoration: none;">➕ Tambah Cerita</a>
         </div>
         <div>${renderStoryList(stories)}</div>

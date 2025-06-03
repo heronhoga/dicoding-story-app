@@ -1,19 +1,19 @@
-import RegisterPagePresenter from "../../presenters/registerPresenter";
-import RegisterView from "../../views/registerFormView";
 import RegisterModel from "../../models/registerModel";
+import RegisterView from "../../views/registerFormView";
+import RegisterPresenter from "../../presenters/registerPresenter";
 
 export default class RegisterPage {
   constructor() {
     this.model = new RegisterModel();
     this.view = new RegisterView();
-    this.presenter = new RegisterPagePresenter(this.view, this.model);
+    this.presenter = new RegisterPresenter(this.model, this.view);
   }
 
   render() {
-    return this.presenter.render();
+    return this.view.getTemplate();
   }
 
   async afterRender() {
-    await this.presenter.afterRender();
+    await this.presenter.init();
   }
 }
